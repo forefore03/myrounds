@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>myRounds</title>
+  <style>
+    :root{
+      --bg: #F2F4F6;
+      --card: #FFFFFF;
+      --card-2: #EDF0F3;
+      --card-3: #F7F9FA;
+      --text: #18212B;
+      --text-soft: #3A4656;
+      --muted: #66707C;
+      --line: #D4DAE1;
+      --accent: #1F5C3F;
+      --score-under: #1F5C3F;
+      --score-even: #334155;
+      --score-over: #9A4A28;
+      --danger: #8B3A2F;
+      --danger-soft: #F3E2E0;
+      --edit: #2D5080;
+      --edit-soft: #E0EAF5;
+      --q1-bg: #EBF2FB;
+      --q1-line: #C0D4EE;
+      --q2-bg: #EBF5EE;
+      --q2-line: #BCDBCB;
+      --q3-bg: #FBF4E8;
+      --q3-line: #E8D0A0;
+      --q4-bg: #F2F2F6;
+      --q4-line: #CECEDE;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
+    button,input,textarea{font:inherit}
+    button{cursor:pointer;border:none;background:none;color:inherit}
+    input,textarea{width:100%;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:16px;outline:none}
+    input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(31,92,63,.10)}
+    .app{max-width:820px;margin:0 auto;padding:20px 16px 40px}
+    .brand{font-size:32px;font-weight:500;letter-spacing:-.04em;margin:8px 0 4px}
+    .brand em{font-style:normal;color:var(--accent);font-weight:900}
+    .subtitle{font-size:15px;color:var(--muted);margin:0 0 20px}
+    .stack{display:grid;gap:14px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:0 10px 30px rgba(24,33,43,.04)}
+    .hero-card{display:grid;gap:14px;background:linear-gradient(180deg,var(--card),var(--card-3))}
+    .hero-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+    .hero-label{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+    .hero-course{font-size:24px;font-weight:900;letter-spacing:-.03em}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:8px}
+    .hero-empty{color:var(--muted);font-size:15px;padding:12px 0}
+    .btn{min-height:46px;padding:12px 16px;border-radius:16px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.2s ease}
+    .btn:active{transform:translateY(1px)}
+    .btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{filter:brightness(.96)}
+    .btn-secondary{background:var(--card-2);color:var(--text)}
+    .btn-danger{background:var(--danger-soft);color:var(--danger)}
+    .btn-edit{background:var(--edit-soft);color:var(--edit)}
+    .search-input{padding:14px 16px;font-size:15px}
+    .backup-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .section-title{font-size:20px;font-weight:900;letter-spacing:-.03em;margin:6px 0 2px}
+    .accordion{display:grid;gap:10px}
+    .accordion-item{border-radius:22px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
+    .accordion-header{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;font-weight:900;text-align:left}
+    .accordion-header small{font-size:13px;color:var(--text-soft);font-weight:700}
+    .accordion-panel{padding:0 12px 12px;display:none}
+    .accordion-item.open .accordion-panel{display:grid;gap:10px}
+    .accordion-item.open .chev{transform:rotate(180deg)}
+    .q1 .accordion-header{background:var(--q1-bg);border-bottom:1px solid var(--q1-line)}
+    .q2 .accordion-header{background:var(--q2-bg);border-bottom:1px solid var(--q2-line)}
+    .q3 .accordion-header{background:var(--q3-bg);border-bottom:1px solid var(--q3-line)}
+    .q4 .accordion-header{background:var(--q4-bg);border-bottom:1px solid var(--q4-line)}
+    .record-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;display:grid;gap:12px;cursor:pointer}
+    .record-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    .record-course{font-size:17px;font-weight:800;letter-spacing:-.02em;min-width:0}
+    .score-badge{font-size:28px;font-weight:900;line-height:1;letter-spacing:-.04em;flex:0 0 auto}
+    .score-under{color:var(--score-under)}.score-even{color:var(--score-even)}.score-over{color:var(--score-over)}
+    .record-note{font-size:14px;color:var(--text-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .record-bottom{display:grid;gap:10px}
+    .thumb-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .thumb,.photo-slot,.detail-photo{aspect-ratio:1;border-radius:14px;overflow:hidden;background:var(--card-2);position:relative}
+    .thumb img,.photo-slot img,.detail-photo img{width:100%;height:100%;object-fit:cover;display:block}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{display:inline-flex;align-items:center;min-height:30px;padding:6px 10px;border-radius:999px;background:var(--card-2);color:var(--text-soft);font-size:13px;font-weight:700}
+    .empty-card{padding:26px 18px;text-align:center;color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:22px}
+    .modal{position:fixed;inset:0;background:rgba(24,33,43,.42);display:none;align-items:flex-end;justify-content:center;padding:18px;z-index:50}
+    .modal.open{display:flex}
+    .modal-sheet{width:min(100%,760px);max-height:90vh;overflow:auto;background:var(--card);border-radius:28px;border:1px solid rgba(255,255,255,.35);padding:18px;box-shadow:0 24px 60px rgba(24,33,43,.20)}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+    .modal-title{font-size:22px;font-weight:900;letter-spacing:-.03em}
+    .icon-btn{min-width:42px;min-height:42px;border-radius:999px;background:var(--card-2);display:inline-flex;align-items:center;justify-content:center;font-size:20px;font-weight:700}
+    .form-grid{display:grid;gap:14px}.label{display:grid;gap:8px}.label span{font-size:14px;font-weight:800;color:var(--text-soft)}
+    .field{padding:14px 16px}.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .companion-group{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+    .choice-btn{min-height:44px;padding:10px 8px;border-radius:14px;background:var(--card-2);font-size:14px;font-weight:800;color:var(--text-soft)}
+    .choice-btn.active{background:rgba(31,92,63,.12);color:var(--accent);box-shadow:inset 0 0 0 1px rgba(31,92,63,.18)}
+    .score-preview{padding:16px;border-radius:18px;background:var(--card-3);display:grid;gap:4px}
+    .score-preview strong{font-size:32px;font-weight:900;letter-spacing:-.04em}.score-preview small{font-size:14px;color:var(--muted)}
+    .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .photo-slot{border:1px dashed var(--line);cursor:pointer}.photo-slot.empty{display:flex;align-items:center;justify-content:center;padding:8px;text-align:center;color:var(--muted)}
+    .photo-slot.empty .plus{font-size:26px;font-weight:400;color:var(--accent);line-height:1;margin-bottom:6px}
+    .slot-inner{display:grid;place-items:center;gap:4px;height:100%}
+    .remove-photo{position:absolute;top:8px;right:8px;min-width:28px;min-height:28px;border-radius:999px;background:rgba(24,33,43,.72);color:#fff;font-size:14px}
+    .modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    .detail-header{display:grid;gap:10px;margin-bottom:16px}.detail-course{font-size:28px;font-weight:900;letter-spacing:-.04em}
+    .detail-score{font-size:48px;font-weight:900;line-height:1;letter-spacing:-.06em}.detail-sub{font-size:15px;color:var(--muted)}
+    .detail-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0 16px}
+    .detail-note{padding:16px;border-radius:18px;background:var(--card-3);color:var(--text-soft);white-space:pre-wrap;word-break:break-word}
+    .info-block{display:grid;gap:10px;margin-top:16px}.info-row{display:flex;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+    .info-row b{font-size:14px;color:var(--muted)}.info-row span{font-size:15px;font-weight:700;color:var(--text)}
+    .toast-wrap{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:grid;gap:8px;z-index:100}
+    .toast{background:#18212B;color:#fff;padding:12px 16px;border-radius:14px;font-size:14px;font-weight:700;box-shadow:0 12px 30px rgba(24,33,43,.25);animation:toastIn .18s ease}
+    @keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .hidden{display:none !important}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media (min-width:768px){.app{padding:28px 20px 60px}.hero-card{grid-template-columns:1.2fr auto;align-items:end}.hero-content{display:grid;gap:10px}.backup-actions{justify-content:flex-start}.modal{align-items:center}.modal-sheet{padding:22px 22px 20px}}
+    @media (max-width:560px){.companion-group{grid-template-columns:repeat(2,minmax(0,1fr))}.score-grid{grid-template-columns:1fr}.detail-photos,.photo-grid{grid-template-columns:repeat(3,1fr)}}
+  </style>
+</head>
+<body>
+  <main class="app" id="app">
+    <h1 class="brand">my<em>Rounds</em></h1>
+    <p class="subtitle">라운드를 기록합니다.</p>
+    <section class="stack" aria-label="메인 콘텐츠">
+      <article class="card hero-card">
+        <div class="hero-content"><div class="hero-label">Latest round</div><div id="heroContent"></div></div>
+        <div><button type="button" class="btn btn-primary" id="openCreateBtn">새 라운드</button></div>
+      </article>
+      <article class="card"><label class="label" for="searchInput"><span class="sr-only">검색</span><input id="searchInput" class="search-input" type="text" placeholder="구장명 또는 메모로 검색" /></label></article>
+      <article class="card"><div class="backup-actions"><button type="button" class="btn btn-secondary" id="backupBtn">기록 백업</button><button type="button" class="btn btn-secondary" id="restoreBtn">복원</button><input type="file" id="restoreFileInput" class="hidden" accept="application/json" /></div></article>
+      <section><h2 class="section-title">라운드 아카이브</h2><div id="archiveRoot" class="accordion"></div></section>
+    </section>
+  </main>
+  <div class="modal" id="createModal" aria-hidden="true"><div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="createTitle"><div class="modal-head"><h2 class="modal-title" id="createTitle">새 라운드</h2><button type="button" class="icon-btn" data-close="createModal" aria-label="닫기">×</button></div><form id="createForm" class="form-grid"><label class="label"><span>라운드 일자</span><input class="field" type="date" name="date" required /></label><label class="label"><span>골프장</span><input class="field" type="text" name="course" required maxlength="120" /></label><div class="score-grid"><label class="label"><span>타수</span><input class="field" type="number" name="strokes" min="1" required /></label><label class="label"><span>코스파</span><input class="field" type="number" name="coursePar" min="1" value="72" required /></label></div><div class="score-preview" id="createScorePreview"></div><fieldset class="label"><span>동반자</span><div class="companion-group" data-companion-group="create"></div><input type="hidden" name="companion" value="혼자" /></fieldset><label class="label"><span>메모</span><textarea class="field" name="note" rows="5" maxlength="3000"></textarea></label><div class="label"><span>사진</span><div class="photo-grid" id="createPhotoGrid"></div></div><div class="modal-actions"><button type="submit" class="btn btn-primary">라운드 저장</button></div></form></div></div>
+  <div class="modal" id="detailModal" aria-hidden="true"><div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="detailTitle"><div class="modal-head"><h2 class="modal-title" id="detailTitle">라운드 상세</h2><button type="button" class="icon-btn" data-close="detailModal" aria-label="닫기">×</button></div><div id="detailContent"></div></div></div>
+  <div class="modal" id="editModal" aria-hidden="true"><div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="editTitle"><div class="modal-head"><h2 class="modal-title" id="editTitle">라운드 수정</h2><button type="button" class="icon-btn" data-close="editModal" aria-label="닫기">×</button></div><form id="editForm" class="form-grid"><input type="hidden" name="id" /><label class="label"><span>라운드 일자</span><input class="field" type="date" name="date" required /></label><label class="label"><span>골프장</span><input class="field" type="text" name="course" required maxlength="120" /></label><div class="score-grid"><label class="label"><span>타수</span><input class="field" type="number" name="strokes" min="1" required /></label><label class="label"><span>코스파</span><input class="field" type="number" name="coursePar" min="1" value="72" required /></label></div><div class="score-preview" id="editScorePreview"></div><fieldset class="label"><span>동반자</span><div class="companion-group" data-companion-group="edit"></div><input type="hidden" name="companion" value="혼자" /></fieldset><label class="label"><span>메모</span><textarea class="field" name="note" rows="5" maxlength="3000"></textarea></label><div class="label"><span>사진</span><div class="photo-grid" id="editPhotoGrid"></div></div><div class="modal-actions"><button type="submit" class="btn btn-primary">수정 저장</button></div></form></div></div>
+  <div class="toast-wrap" id="toastWrap" aria-live="polite" aria-atomic="true"></div>
+  <script>
+    const DB_NAME = 'myRoundsDB';
+    const DB_VERSION = 2;
+    const STORE_NAME = 'rounds';
+    const COMPANIONS = ['혼자','가족','친구','회사','조인'];
+    const state = { db: null, records: [], search: '', currentDetailId: null, createPhotos: ['', '', ''], editPhotos: ['', '', ''] };
+    const el = {
+      heroContent: document.getElementById('heroContent'), archiveRoot: document.getElementById('archiveRoot'), searchInput: document.getElementById('searchInput'), openCreateBtn: document.getElementById('openCreateBtn'), backupBtn: document.getElementById('backupBtn'), restoreBtn: document.getElementById('restoreBtn'), restoreFileInput: document.getElementById('restoreFileInput'), createModal: document.getElementById('createModal'), detailModal: document.getElementById('detailModal'), editModal: document.getElementById('editModal'), createForm: document.getElementById('createForm'), editForm: document.getElementById('editForm'), createScorePreview: document.getElementById('createScorePreview'), editScorePreview: document.getElementById('editScorePreview'), createPhotoGrid: document.getElementById('createPhotoGrid'), editPhotoGrid: document.getElementById('editPhotoGrid'), detailContent: document.getElementById('detailContent'), toastWrap: document.getElementById('toastWrap')
+    };
+    function showToast(message){const toast=document.createElement('div');toast.className='toast';toast.textContent=message;el.toastWrap.appendChild(toast);setTimeout(()=>{toast.style.opacity='0';toast.style.transform='translateY(8px)'},2200);setTimeout(()=>toast.remove(),2500)}
+    function pad2(value){return String(value).padStart(2,'0')}
+    function inputDateToStored(value){if(!value||!/^\d{4}-\d{2}-\d{2}$/.test(value)) return '';const [y,m,d]=value.split('-');return `${y}.${m}.${d}`}
+    function storedDateToInput(value){if(!value||!/^\d{4}\.\d{2}\.\d{2}$/.test(value)) return '';return value.replace(/\./g,'-')}
+    function quarterFromStoredDate(dateStr){const m=Number((dateStr||'').split('.')[1]||0);if(m>=1&&m<=3)return'Q1';if(m>=4&&m<=6)return'Q2';if(m>=7&&m<=9)return'Q3';return'Q4'}
+    function compareStoredDateDesc(a,b){const aa=(a.date||'').replace(/\./g,'');const bb=(b.date||'').replace(/\./g,'');if(aa===bb)return (b.updatedAt||0)-(a.updatedAt||0);return bb.localeCompare(aa)}
+    function scoreInfo(strokes,coursePar){const s=Number(strokes||0),p=Number(coursePar||0),diff=s-p;let label='E',className='score-even';if(diff>0){label=`+${diff}`;className='score-over'}else if(diff<0){label=`${diff}`;className='score-under'}return{diff,label,className}}
+    function safeText(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+    function getSummary(note){const text=String(note||'').trim();return text||'메모가 없습니다.'}
+    function normalizePhotos(photos){const base=Array.isArray(photos)?photos.slice(0,3):[];while(base.length<3)base.push('');return base.map(v=>typeof v==='string'?v:'')}
+    function getFilteredRecords(){const q=state.search.trim().toLowerCase();const sorted=[...state.records].sort(compareStoredDateDesc);if(!q)return sorted;return sorted.filter(record=>String(record.course||'').toLowerCase().includes(q)||String(record.note||'').toLowerCase().includes(q))}
+    function groupByQuarter(records){const map=new Map();records.forEach(record=>{const year=String(record.date||'').split('.')[0]||'0000';const quarter=quarterFromStoredDate(record.date);const key=`${year}-${quarter}`;if(!map.has(key))map.set(key,[]);map.get(key).push(record)});return [...map.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([key,items])=>[key,items.sort(compareStoredDateDesc)])}
+    function renderHero(){const latest=[...state.records].sort(compareStoredDateDesc)[0];if(!latest){el.heroContent.innerHTML=`<div class="hero-empty">아직 기록된 라운드가 없습니다.</div>`;return}const score=scoreInfo(latest.strokes,latest.coursePar);el.heroContent.innerHTML=`<div class="hero-head"><div><div class="hero-course">${safeText(latest.course)}</div><div class="hero-meta"><span class="chip">${safeText(latest.date)}</span><span class="chip">${safeText(latest.companion)}</span><span class="chip">${safeText(`${latest.strokes}타 · Par ${latest.coursePar}`)}</span></div></div><div class="score-badge ${score.className}">${score.label}</div></div><div class="record-note">${safeText(getSummary(latest.note))}</div>`}
+    function renderThumbs(photos){const filled=normalizePhotos(photos).filter(Boolean);if(!filled.length)return'';return `<div class="thumb-row">${filled.map(src=>`<div class="thumb"><img src="${src}" alt="라운드 사진" loading="lazy" decoding="async"></div>`).join('')}</div>`}
+    function renderRecordCard(record){const score=scoreInfo(record.strokes,record.coursePar);return `<article class="record-card" data-record-id="${record.id}" tabindex="0" role="button" aria-label="${safeText(record.course)} 상세 보기"><div class="record-top"><div class="record-course">${safeText(record.course)}</div><div class="score-badge ${score.className}">${score.label}</div></div><div class="record-note">${safeText(getSummary(record.note))}</div><div class="record-bottom">${renderThumbs(record.photos)}<div class="chips"><span class="chip">${safeText(record.date)}</span><span class="chip">${safeText(record.companion)}</span></div></div></article>`}
+    function renderArchive(){const records=getFilteredRecords();if(!records.length){const emptyText=state.search.trim()?'검색 결과가 없습니다.':'아직 기록된 라운드가 없습니다.';el.archiveRoot.innerHTML=`<div class="empty-card">${safeText(emptyText)}</div>`;return}const groups=groupByQuarter(records);const latestKey=groups[0]?.[0];el.archiveRoot.innerHTML=groups.map(([key,items])=>{const qClass=key.split('-')[1].toLowerCase();const open=key===latestKey?' open':'';return `<section class="accordion-item ${qClass}${open}" data-accordion-key="${safeText(key)}"><button type="button" class="accordion-header" data-accordion-toggle="${safeText(key)}" aria-expanded="${key===latestKey?'true':'false'}"><span>${safeText(key)} <small>${items.length}건</small></span><span class="chev">⌄</span></button><div class="accordion-panel">${items.map(renderRecordCard).join('')}</div></section>`}).join('')}
+    function renderAll(){renderHero();renderArchive()}
+    function createCompanionButtons(targetKey){const group=document.querySelector(`[data-companion-group="${targetKey}"]`);if(!group)return;group.innerHTML=COMPANIONS.map(name=>`<button type="button" class="choice-btn" data-choice="${safeText(name)}">${safeText(name)}</button>`).join('')}
+    function setActiveCompanion(form,value){const hidden=form.querySelector('input[name="companion"]');hidden.value=value;form.querySelectorAll('.choice-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.choice===value))}
+    function updateScorePreview(form,previewEl){const strokes=Number(form.elements.strokes.value||0);const coursePar=Number(form.elements.coursePar.value||72);const score=scoreInfo(strokes,coursePar);previewEl.innerHTML=`<strong class="${score.className}">${score.label}</strong><small>${strokes||0}타 · Par ${coursePar||0}</small>`}
+    function renderPhotoSlots(container,photos,mode){container.innerHTML=photos.map((src,index)=>src?`<div class="photo-slot"><img src="${src}" alt="업로드 사진 ${index+1}" loading="lazy" decoding="async"><button type="button" class="remove-photo" data-remove-photo="${mode}" data-photo-index="${index}" aria-label="사진 삭제">✕</button></div>`:`<button type="button" class="photo-slot empty" data-photo-slot="${mode}" data-photo-index="${index}" aria-label="사진 업로드"><span class="slot-inner"><span class="plus">＋</span><span>사진 추가</span></span></button>`).join('')}
+    function openModal(id){const modal=document.getElementById(id);if(!modal)return;modal.classList.add('open');modal.setAttribute('aria-hidden','false')}
+    function closeModal(id){const modal=document.getElementById(id);if(!modal)return;modal.classList.remove('open');modal.setAttribute('aria-hidden','true')}
+    function closeAllModals(){['createModal','detailModal','editModal'].forEach(closeModal)}
+    function resetCreateForm(){el.createForm.reset();el.createForm.elements.coursePar.value=72;el.createForm.elements.companion.value='혼자';state.createPhotos=['','',''];setActiveCompanion(el.createForm,'혼자');renderPhotoSlots(el.createPhotoGrid,state.createPhotos,'create');updateScorePreview(el.createForm,el.createScorePreview)}
+    function openCreateModal(){resetCreateForm();openModal('createModal')}
+    function openDetailModal(id){const record=state.records.find(r=>Number(r.id)===Number(id));if(!record)return;state.currentDetailId=record.id;const score=scoreInfo(record.strokes,record.coursePar);const photos=normalizePhotos(record.photos).filter(Boolean);el.detailContent.innerHTML=`<section class="detail-header"><div class="detail-course">${safeText(record.course)}</div><div class="detail-score ${score.className}">${score.label}</div><div class="detail-sub">${safeText(`${record.strokes}타 · Par ${record.coursePar}`)}</div></section>${photos.length?`<div class="detail-photos">${photos.map(src=>`<div class="detail-photo"><img src="${src}" alt="라운드 사진" loading="lazy" decoding="async"></div>`).join('')}</div>`:''}<div class="detail-note">${safeText(record.note||'메모가 없습니다.')}</div><div class="info-block"><div class="info-row"><b>날짜</b><span>${safeText(record.date)}</span></div><div class="info-row"><b>골프장</b><span>${safeText(record.course)}</span></div><div class="info-row"><b>타수</b><span>${safeText(record.strokes)}</span></div><div class="info-row"><b>코스파</b><span>${safeText(record.coursePar)}</span></div><div class="info-row"><b>동반자</b><span>${safeText(record.companion)}</span></div></div><div class="modal-actions"><button type="button" class="btn btn-edit" id="detailEditBtn">수정</button><button type="button" class="btn btn-danger" id="detailDeleteBtn">삭제</button></div>`;document.getElementById('detailEditBtn')?.addEventListener('click',()=>openEditModal(record.id));document.getElementById('detailDeleteBtn')?.addEventListener('click',()=>deleteRecordFlow(record.id));openModal('detailModal')}
+    function openEditModal(id){const record=state.records.find(r=>Number(r.id)===Number(id));if(!record)return;el.editForm.elements.id.value=record.id;el.editForm.elements.date.value=storedDateToInput(record.date);el.editForm.elements.course.value=record.course||'';el.editForm.elements.strokes.value=record.strokes??'';el.editForm.elements.coursePar.value=record.coursePar??72;el.editForm.elements.note.value=record.note||'';state.editPhotos=normalizePhotos(record.photos);setActiveCompanion(el.editForm,record.companion||'혼자');renderPhotoSlots(el.editPhotoGrid,state.editPhotos,'edit');updateScorePreview(el.editForm,el.editScorePreview);openModal('editModal')}
+    function openFilePicker(mode,index){const input=document.createElement('input');input.type='file';input.accept='image/*';input.addEventListener('change',async event=>{const file=event.target.files&&event.target.files[0];if(!file)return;try{const compressed=await compressImage(file);if(mode==='create'){state.createPhotos[index]=compressed;renderPhotoSlots(el.createPhotoGrid,state.createPhotos,'create')}else{state.editPhotos[index]=compressed;renderPhotoSlots(el.editPhotoGrid,state.editPhotos,'edit')}}catch(error){alert('사진 처리 중 오류가 발생했습니다.')}});input.click()}
+    function compressImage(file){return new Promise((resolve,reject)=>{if(!file)return reject(new Error('No file'));const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const maxSide=1200;let {width,height}=img;if(width>height&&width>maxSide){height=Math.round((height*maxSide)/width);width=maxSide}else if(height>=width&&height>maxSide){width=Math.round((width*maxSide)/height);height=maxSide}const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d');if(!ctx)return reject(new Error('Canvas unsupported'));ctx.drawImage(img,0,0,width,height);resolve(canvas.toDataURL('image/jpeg',0.75))};img.onerror=reject;img.src=reader.result};reader.onerror=reject;reader.readAsDataURL(file)})}
+    function ensureStoreExists(db){return !!(db&&db.objectStoreNames&&db.objectStoreNames.contains(STORE_NAME))}
+    function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,DB_VERSION);req.onupgradeneeded=(event)=>{const db=event.target.result;if(!db.objectStoreNames.contains(STORE_NAME)){db.createObjectStore(STORE_NAME,{keyPath:'id'})}};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||new Error('DB open failed'))})}
+    function deleteLegacyDatabase(){return new Promise(resolve=>{const req=indexedDB.deleteDatabase(DB_NAME);req.onsuccess=()=>resolve(true);req.onerror=()=>resolve(false);req.onblocked=()=>resolve(false)})}
+    function getStore(mode){if(!state.db||!ensureStoreExists(state.db)) throw new Error('Object store not found');const tx=state.db.transaction(STORE_NAME,mode);return tx.objectStore(STORE_NAME)}
+    function dbRequest(request){return new Promise((resolve,reject)=>{request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error)})}
+    function dbGetAll(){return dbRequest(getStore('readonly').getAll())}
+    function dbPut(record){return dbRequest(getStore('readwrite').put(record))}
+    function dbDelete(id){return dbRequest(getStore('readwrite').delete(id))}
+    function dbClear(){return dbRequest(getStore('readwrite').clear())}
+    async function loadRecords(){state.records=(await dbGetAll()).map(record=>({...record,photos:normalizePhotos(record.photos)})).sort(compareStoredDateDesc);renderAll()}
+    function buildRecordFromForm(form,photos,existing){const storedDate=inputDateToStored(form.elements.date.value);const course=String(form.elements.course.value||'').trim();const strokes=Number(form.elements.strokes.value);const coursePar=Number(form.elements.coursePar.value||72);const companion=String(form.elements.companion.value||'혼자').trim();const note=String(form.elements.note.value||'').trim();if(!storedDate||!course||!Number.isFinite(strokes)||strokes<=0||!Number.isFinite(coursePar)||coursePar<=0) throw new Error('입력값이 올바르지 않습니다.');const now=Date.now();return {id:existing?.id??now,date:storedDate,course,strokes,coursePar,companion:COMPANIONS.includes(companion)?companion:'혼자',note,photos:normalizePhotos(photos),createdAt:existing?.createdAt??now,updatedAt:now}}
+    async function handleCreateSubmit(event){event.preventDefault();try{const record=buildRecordFromForm(el.createForm,state.createPhotos);await dbPut(record);await loadRecords();closeModal('createModal');showToast('라운드가 저장되었습니다.')}catch(error){alert(error.message||'저장 중 오류가 발생했습니다.')}}
+    async function handleEditSubmit(event){event.preventDefault();try{const id=Number(el.editForm.elements.id.value);const existing=state.records.find(r=>Number(r.id)===id);if(!existing) throw new Error('수정할 라운드를 찾을 수 없습니다.');const record=buildRecordFromForm(el.editForm,state.editPhotos,existing);await dbPut(record);await loadRecords();closeModal('editModal');closeModal('detailModal');openDetailModal(record.id);showToast('라운드가 수정되었습니다.')}catch(error){alert(error.message||'수정 중 오류가 발생했습니다.')}}
+    async function deleteRecordFlow(id){if(!confirm('이 라운드를 삭제하시겠습니까?')) return;try{await dbDelete(Number(id));closeModal('detailModal');closeModal('editModal');await loadRecords()}catch(error){alert('삭제 중 오류가 발생했습니다.')}}
+    function backupRecords(){const payload={app:'myRounds',version:1,exportedAt:Date.now(),records:[...state.records].sort(compareStoredDateDesc)};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const a=document.createElement('a');const stamp=new Date();const filename=`myRounds-backup-${stamp.getFullYear()}${pad2(stamp.getMonth()+1)}${pad2(stamp.getDate())}-${pad2(stamp.getHours())}${pad2(stamp.getMinutes())}.json`;a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},0)}
+    async function restoreFromFile(file){if(!file)return;try{const text=await file.text();const parsed=JSON.parse(text);if(parsed.app!=='myRounds'||!Array.isArray(parsed.records)) throw new Error('올바른 백업 파일이 아닙니다.');if(!confirm('기존 기록을 모두 삭제하고 복원하시겠습니까?')) return;await dbClear();for(const raw of parsed.records){const restored={id:Number(raw.id)||Date.now()+Math.floor(Math.random()*1000),date:/^\d{4}\.\d{2}\.\d{2}$/.test(raw.date||'')?raw.date:'',course:String(raw.course||'').trim(),strokes:Number(raw.strokes||0),coursePar:Number(raw.coursePar||72),companion:COMPANIONS.includes(raw.companion)?raw.companion:'혼자',note:String(raw.note||''),photos:normalizePhotos(raw.photos),createdAt:Number(raw.createdAt||Date.now()),updatedAt:Number(raw.updatedAt||Date.now())};if(!restored.date||!restored.course||restored.strokes<=0||restored.coursePar<=0) continue;await dbPut(restored)}await loadRecords();showToast('복원이 완료되었습니다.')}catch(error){alert(error.message||'복원 중 오류가 발생했습니다.')}finally{el.restoreFileInput.value=''}}
+    function bindGlobalEvents(){el.openCreateBtn.addEventListener('click',openCreateModal);el.searchInput.addEventListener('input',event=>{state.search=event.target.value||'';renderArchive()});el.backupBtn.addEventListener('click',backupRecords);el.restoreBtn.addEventListener('click',()=>el.restoreFileInput.click());el.restoreFileInput.addEventListener('change',event=>restoreFromFile(event.target.files&&event.target.files[0]));el.createForm.addEventListener('submit',handleCreateSubmit);el.editForm.addEventListener('submit',handleEditSubmit);document.addEventListener('click',event=>{const closeTarget=event.target.closest('[data-close]');if(closeTarget) closeModal(closeTarget.dataset.close);const slot=event.target.closest('[data-photo-slot]');if(slot) openFilePicker(slot.dataset.photoSlot,Number(slot.dataset.photoIndex));const remove=event.target.closest('[data-remove-photo]');if(remove){const mode=remove.dataset.removePhoto;const index=Number(remove.dataset.photoIndex);if(mode==='create'){state.createPhotos[index]='';renderPhotoSlots(el.createPhotoGrid,state.createPhotos,'create')}else{state.editPhotos[index]='';renderPhotoSlots(el.editPhotoGrid,state.editPhotos,'edit')}}const recordCard=event.target.closest('[data-record-id]');if(recordCard) openDetailModal(Number(recordCard.dataset.recordId));const toggle=event.target.closest('[data-accordion-toggle]');if(toggle){const key=toggle.dataset.accordionToggle;const item=document.querySelector(`[data-accordion-key="${CSS.escape(key)}"]`);if(item){const isOpen=item.classList.toggle('open');toggle.setAttribute('aria-expanded',String(isOpen))}}});document.addEventListener('keydown',event=>{if(event.key==='Escape') closeAllModals();const card=event.target.closest('[data-record-id]');if(card&&(event.key==='Enter'||event.key===' ')){event.preventDefault();openDetailModal(Number(card.dataset.recordId))}});[el.createModal,el.detailModal,el.editModal].forEach(modal=>{modal.addEventListener('click',event=>{if(event.target===modal) closeModal(modal.id)})});['create','edit'].forEach(mode=>{const form=mode==='create'?el.createForm:el.editForm;const preview=mode==='create'?el.createScorePreview:el.editScorePreview;form.elements.strokes.addEventListener('input',()=>updateScorePreview(form,preview));form.elements.coursePar.addEventListener('input',()=>updateScorePreview(form,preview));form.querySelectorAll('.choice-btn').forEach(btn=>btn.addEventListener('click',()=>setActiveCompanion(form,btn.dataset.choice)))})}
+    async function init(){createCompanionButtons('create');createCompanionButtons('edit');setActiveCompanion(el.createForm,'혼자');setActiveCompanion(el.editForm,'혼자');renderPhotoSlots(el.createPhotoGrid,state.createPhotos,'create');renderPhotoSlots(el.editPhotoGrid,state.editPhotos,'edit');updateScorePreview(el.createForm,el.createScorePreview);updateScorePreview(el.editForm,el.editScorePreview);bindGlobalEvents();try{state.db=await openDB();if(!ensureStoreExists(state.db)){state.db.close();await deleteLegacyDatabase();state.db=await openDB()}if(!ensureStoreExists(state.db)) throw new Error('Object store missing');await loadRecords()}catch(error){alert('IndexedDB 초기화에 실패했습니다. 기존 DB를 삭제한 뒤 다시 시도해주세요.')}}
+    init();
+  </script></body></html>
